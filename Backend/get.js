@@ -3,7 +3,7 @@ import dynamoDb from "./libs/dynamodb-lib";
 
 export const main = handler(async (event, context) => {
   const params = {
-    TableName: 'notes',
+    TableName: process.env.tableName,
     // 'Key' defines the partition key and sort key of the item to be retrieved
     Key: {
       userId:event.requestContext.identity.cognitoIdentityId, // The id of the author

@@ -54,7 +54,7 @@ export default function NewNote() {
       body: note
     });
   }
-
+  
   return (
     <div className="NewNote">
       <Form onSubmit={handleSubmit}>

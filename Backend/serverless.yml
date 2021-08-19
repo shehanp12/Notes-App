@@ -1,27 +1,27 @@
 service: notes-api
-
 # Create an optimized package for our functions
 package:
   individually: true
-
 plugins:
   - serverless-bundle # Package our functions with Webpack
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
-
+  - serverless-plugin-thundra
 provider:
   name: aws
   runtime: nodejs12.x
   stage: prod
   region: ap-south-1
-
+  timeout: 30
   # These environment variables are made available to our functions
   # under process.env.
   environment:
-    tableName: notes
+    tableName: ${process.env.tableName}
     stripeSecretKey: ${env:STRIPE_SECRET_KEY}
-
-  # 'iamRoleStatements' defines the permission policy for the Lambda function.
+    # thundra_apiKey: “626f7d15-853a-4a52-bbb1-39adfe9f88ed”
+    # thundra_agent_lambda_debug_enable: true
+    # thundra_agent_lambda_debugger_auth_token: “BaNquTzrYbOQ+U0bwyXgME5xk/yV9K8EF6pwMfKEwiY=”
+  # ‘iamRoleStatements’ defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
   iamRoleStatements:
     - Effect: Allow
@@ -33,9 +33,8 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - dynamodb:DescribeTable
-        - dynamodb:AmazonDynamoDBFullAccess 
+        - dynamodb:AmazonDynamoDBFullAccess
       Resource: "arn:aws:dynamodb:ap-south-1:*:*"
-
 functions:
   # Defines an HTTP API endpoint that calls the main function in create.js
   # - path: url path is /notes
@@ -48,6 +47,10 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+    environment:
+      thundra_apiKey: "626f7d15-853a-4a52-bbb1-39adfe9f88ed"
+      thundra_agent_lambda_debug_enable: true
+      thundra_agent_lambda_debugger_auth_token: "BaNquTzrYbOQ+U0bwyXgME5xk/yV9K8EF6pwMfKEwiY="
   get:
     # Defines an HTTP API endpoint that calls the main function in get.js
     # - path: url path is /notes/{id}
@@ -70,6 +73,7 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+   
   update:
     # Defines an HTTP API endpoint that calls the main function in update.js
     # - path: url path is /notes/{id}
@@ -106,3 +110,9 @@ functions:
 resources:
   # API Gateway Errors
   - ${file(resources/api-gateway-errors.yml)}
+
+
+
+
+
+
